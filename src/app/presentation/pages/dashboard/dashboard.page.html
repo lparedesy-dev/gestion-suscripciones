@@ -1,0 +1,201 @@
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8">
+
+  <!-- Alertas de renovación -->
+  @if (subService.renewalAlerts().length > 0) {
+    <app-renewal-alert-banner [alerts]="subService.renewalAlerts()" />
+  }
+
+  <!-- Stat cards -->
+  <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+    <!-- Activas -->
+    <app-glass-card>
+      <div class="p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/25 to-indigo-600/10
+                    flex items-center justify-center shrink-0">
+          <i class="pi pi-check-circle text-indigo-500 dark:text-indigo-400 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-widest text-[var(--p-text-muted-color)] mb-1.5">
+            Suscripciones activas
+          </p>
+          <p class="text-4xl font-bold leading-none tabular-nums">{{ subService.activeCount() }}</p>
+        </div>
+      </div>
+    </app-glass-card>
+
+    <!-- Gasto mensual -->
+    <app-glass-card>
+      <div class="p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/25 to-emerald-600/10
+                    flex items-center justify-center shrink-0">
+          <i class="pi pi-wallet text-emerald-500 dark:text-emerald-400 text-xl"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-semibold uppercase tracking-widest text-[var(--p-text-muted-color)] mb-1.5">
+            Gasto mensual
+          </p>
+          @if (subService.costsByCurrency().length === 0) {
+            <p class="text-4xl font-bold leading-none text-emerald-600 dark:text-emerald-400 tabular-nums">$0.00</p>
+          }
+          @for (c of subService.costsByCurrency(); track c.currency) {
+            <div class="flex items-baseline gap-1.5">
+              <p class="text-3xl font-bold leading-none text-emerald-600 dark:text-emerald-400 tabular-nums">
+                {{ c.monthly | number:'1.2-2' }}
+              </p>
+              <span class="text-sm font-bold text-emerald-600/60 dark:text-emerald-400/60">{{ c.currency }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </app-glass-card>
+
+    <!-- Gasto anual -->
+    <app-glass-card>
+      <div class="p-5 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500/25 to-violet-600/10
+                    flex items-center justify-center shrink-0">
+          <i class="pi pi-calendar text-violet-500 dark:text-violet-400 text-xl"></i>
+        </div>
+        <div class="min-w-0">
+          <p class="text-sm font-semibold uppercase tracking-widest text-[var(--p-text-muted-color)] mb-1.5">
+            Gasto anual estimado
+          </p>
+          @if (subService.costsByCurrency().length === 0) {
+            <p class="text-4xl font-bold leading-none text-violet-600 dark:text-violet-400 tabular-nums">$0.00</p>
+          }
+          @for (c of subService.costsByCurrency(); track c.currency) {
+            <div class="flex items-baseline gap-1.5">
+              <p class="text-3xl font-bold leading-none text-violet-600 dark:text-violet-400 tabular-nums">
+                {{ c.annual | number:'1.2-2' }}
+              </p>
+              <span class="text-sm font-bold text-violet-600/60 dark:text-violet-400/60">{{ c.currency }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </app-glass-card>
+
+  </section>
+
+  <!-- Gráficos (solo si hay suscripciones activas) -->
+  @if (subService.activeCount() > 0) {
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Donut: distribución de gasto mensual -->
+      <app-glass-card>
+        <div class="p-5">
+          <div class="flex items-center gap-2 mb-5">
+            <div class="w-1.5 h-5 rounded-full bg-gradient-to-b from-indigo-500 to-violet-500"></div>
+            <h2 class="text-sm font-semibold uppercase tracking-widest text-[var(--p-text-muted-color)]">
+              Distribución de gasto mensual
+            </h2>
+          </div>
+          <div class="h-[220px]">
+            <p-chart
+              type="doughnut"
+              [data]="spendingDonutData()"
+              [options]="donutOptions"
+              height="220"
+            />
+          </div>
+        </div>
+      </app-glass-card>
+
+      <!-- Bar: ranking de suscripciones por costo -->
+      <app-glass-card>
+        <div class="p-5">
+          <div class="flex items-center gap-2 mb-5">
+            <div class="w-1.5 h-5 rounded-full bg-gradient-to-b from-emerald-500 to-teal-500"></div>
+            <h2 class="text-sm font-semibold uppercase tracking-widest text-[var(--p-text-muted-color)]">
+              Costo mensual por suscripción
+            </h2>
+          </div>
+          <div class="h-[220px]">
+            <p-chart
+              type="bar"
+              [data]="spendingBarData()"
+              [options]="barOptions"
+              height="220"
+            />
+          </div>
+        </div>
+      </app-glass-card>
+
+    </section>
+  }
+
+  <!-- Próximas renovaciones -->
+  @if (subService.renewalAlerts().length > 0) {
+    <section>
+      <div class="flex items-center gap-2 mb-3 px-1">
+        <div class="w-1 h-4 rounded-full bg-amber-400"></div>
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-[var(--p-text-muted-color)]">
+          Próximas renovaciones
+        </h2>
+      </div>
+      <app-glass-card>
+        <div class="divide-y divide-slate-200/60 dark:divide-slate-700/50">
+          @for (alert of subService.renewalAlerts(); track alert.subscription.id) {
+            <div class="flex items-center justify-between px-5 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-amber-400/10 dark:bg-amber-400/15
+                            flex items-center justify-center shrink-0">
+                  <i class="pi pi-bell text-amber-500 text-sm"></i>
+                </div>
+                <div>
+                  <p class="font-semibold text-sm leading-tight">{{ alert.subscription.name }}</p>
+                  <p class="text-sm text-[var(--p-text-muted-color)] mt-0.5">{{ alert.subscription.email }}</p>
+                </div>
+              </div>
+              <p-tag
+                [value]="alert.daysUntilRenewal === 0 ? 'Hoy' : 'En ' + alert.daysUntilRenewal + ' día(s)'"
+                severity="warn"
+              />
+            </div>
+          }
+        </div>
+      </app-glass-card>
+    </section>
+  }
+
+  <!-- Mis suscripciones -->
+  <section>
+    <div class="flex items-center justify-between mb-4 px-1">
+      <div class="flex items-center gap-2">
+        <div class="w-1 h-4 rounded-full bg-[var(--p-primary-color)]"></div>
+        <h2 class="text-sm font-semibold uppercase tracking-widest text-[var(--p-text-muted-color)]">
+          Mis suscripciones
+        </h2>
+      </div>
+      <p-button
+        label="Ver todas"
+        routerLink="/subscriptions"
+        [text]="true"
+        severity="secondary"
+        size="small"
+      />
+    </div>
+
+    @if (subService.subscriptions().length === 0) {
+      <app-glass-card>
+        <div class="text-center py-16 px-6">
+          <div class="w-16 h-16 rounded-2xl bg-[var(--p-primary-color)]/10 dark:bg-[var(--p-primary-color)]/20
+                      flex items-center justify-center mx-auto mb-4">
+            <i class="pi pi-credit-card text-3xl text-[var(--p-primary-color)]"></i>
+          </div>
+          <p class="text-base font-semibold mb-1">Todavía no tenés suscripciones</p>
+          <p class="text-sm text-[var(--p-text-muted-color)] mb-6">Agregá tu primera desde el botón de abajo</p>
+          <p-button label="Agregar suscripción" icon="pi pi-plus" routerLink="/subscriptions/new" />
+        </div>
+      </app-glass-card>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (sub of subService.subscriptions(); track sub.id) {
+          <app-subscription-card [subscription]="sub" (deleted)="subService.delete($event)" />
+        }
+      </div>
+    }
+  </section>
+
+</main>

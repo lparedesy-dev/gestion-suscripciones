@@ -1,0 +1,24 @@
+<div class="rounded-2xl overflow-hidden
+  bg-amber-50/80 dark:bg-amber-950/30
+  backdrop-blur-2xl
+  border border-amber-300/70 dark:border-amber-700/50
+  shadow-lg shadow-amber-200/30 dark:shadow-amber-900/20
+  p-4 space-y-3">
+  <p class="font-semibold m-0 flex items-center gap-2 text-amber-700 dark:text-amber-400">
+    <i class="pi pi-exclamation-triangle"></i>
+    Próximas renovaciones
+  </p>
+  @for (alert of alerts(); track alert.subscription.id) {
+    <div class="flex items-center justify-between text-sm gap-3">
+      <span class="truncate text-amber-900 dark:text-amber-200">
+        {{ alert.subscription.name }}
+        <span class="text-amber-600/70 dark:text-amber-400/60"> — {{ alert.subscription.email }}</span>
+      </span>
+      <p-tag
+        [value]="alert.daysUntilRenewal === 0 ? 'Hoy' : 'En ' + alert.daysUntilRenewal + ' día(s)'"
+        severity="warn"
+        class="shrink-0"
+      />
+    </div>
+  }
+</div>

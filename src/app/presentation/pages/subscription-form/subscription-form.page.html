@@ -1,0 +1,234 @@
+<main class="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+  <!-- Encabezado -->
+  <div class="flex items-center gap-3 mb-6 sm:mb-8">
+    <p-button icon="pi pi-arrow-left" [text]="true" severity="secondary" routerLink="/" />
+    <h1 class="text-xl sm:text-2xl font-bold m-0">
+      {{ isEdit() ? 'Editar suscripción' : 'Nueva suscripción' }}
+    </h1>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-5 sm:space-y-6">
+
+    <!-- Servicios populares -->
+    @if (!isEdit()) {
+      <div>
+        <label class="block text-sm mb-2 text-[var(--p-text-muted-color)] font-medium">Acceso rápido</label>
+        <div class="flex flex-wrap gap-2">
+          @for (s of popularServices; track s.name) {
+            <p-button
+              [label]="s.name"
+              [outlined]="true"
+              size="small"
+              type="button"
+              (click)="selectPopular(s)"
+              [style]="{ 'border-color': s.color, 'color': s.color }"
+            />
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Nombre + Color -->
+    <div class="grid grid-cols-[1fr_auto] gap-3 items-end">
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Nombre del servicio *</label>
+        <input pInputText formControlName="name" placeholder="ej: Netflix" class="w-full" />
+        @if (form.controls.name.touched && form.controls.name.invalid) {
+          <p class="text-sm text-red-500 mt-1">El nombre es requerido</p>
+        }
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Color</label>
+        <input formControlName="color" type="color"
+               class="h-10 w-14 rounded-xl border border-[var(--p-surface-border)] bg-[var(--p-surface-0)] cursor-pointer p-0.5" />
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div class="flex flex-col gap-1">
+      <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Email de la cuenta *</label>
+      <input pInputText formControlName="email" type="email" placeholder="correo@ejemplo.com" class="w-full" />
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <p class="text-sm text-red-500 mt-1">Email válido requerido</p>
+      }
+    </div>
+
+    <!-- Contraseña -->
+    <div class="flex flex-col gap-1">
+      <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Contraseña (opcional)</label>
+      <p-password
+        formControlName="password"
+        [feedback]="false"
+        [toggleMask]="true"
+        placeholder="••••••••"
+        styleClass="w-full"
+        [fluid]="true"
+      />
+    </div>
+
+    <!-- Moneda + Costo + Ciclo -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Moneda *</label>
+        <p-select
+          formControlName="currency"
+          [options]="currencyOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Costo *</label>
+        <p-inputnumber
+          formControlName="cost"
+          [minFractionDigits]="2"
+          [maxFractionDigits]="2"
+          [fluid]="true"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Ciclo de pago *</label>
+        <p-select
+          formControlName="billingCycle"
+          [options]="cycleOptions"
+          optionLabel="label"
+          optionValue="value"
+          (onChange)="onCycleChange($event.value)"
+          styleClass="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Día / Fecha de renovación -->
+    <div class="flex flex-col gap-1">
+      @if (isMonthly()) {
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Día de renovación *</label>
+        <p class="text-sm text-[var(--p-text-muted-color)] mb-2">Se renueva ese mismo día todos los meses</p>
+        <p-select
+          formControlName="renewalDay"
+          [options]="days"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Día"
+          styleClass="w-full"
+        />
+      } @else {
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Fecha de renovación anual *</label>
+        <p class="text-sm text-[var(--p-text-muted-color)] mb-2">Se renueva ese día y mes cada año</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1">
+            <p-select
+              formControlName="renewalMonth"
+              [options]="months"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Mes"
+              styleClass="w-full"
+            />
+            @if (form.controls.renewalMonth.touched && form.controls.renewalMonth.errors?.['required']) {
+              <p class="text-sm text-red-500 mt-1">El mes es requerido</p>
+            }
+          </div>
+          <p-select
+            formControlName="renewalDay"
+            [options]="days"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Día"
+            styleClass="w-full"
+          />
+        </div>
+      }
+    </div>
+
+    <!-- Método de pago + Últimos 4 + Estado -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Tarjeta / Método *</label>
+        <p-select
+          formControlName="cardType"
+          [options]="cardTypeOptions"
+          styleClass="w-full"
+        />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Últimos 4 dígitos</label>
+        <div class="p-inputgroup flex items-center">
+          <span class="p-inputgroup-addon">••••</span>
+          <input
+            pInputText
+            formControlName="cardLastFour"
+            placeholder="4242"
+            maxlength="4"
+            inputmode="numeric"
+            class="w-full"
+          />
+        </div>
+        @if (form.controls.cardLastFour.touched && form.controls.cardLastFour.invalid) {
+          <p class="text-sm text-red-500 mt-1">Solo 4 dígitos</p>
+        }
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Estado</label>
+        <p-select
+          formControlName="status"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          styleClass="w-full"
+        />
+      </div>
+    </div>
+
+    <!-- Notificaciones -->
+    <div class="rounded-2xl overflow-hidden
+      bg-white/60 dark:bg-slate-900/40
+      backdrop-blur-2xl
+      border border-white/75 dark:border-white/[0.07]
+      shadow-xl shadow-slate-400/20 dark:shadow-black/40
+      p-5 space-y-4">
+      <div class="flex items-center justify-between gap-4">
+        <div>
+          <p class="font-semibold m-0">Notificaciones</p>
+          <p class="text-sm text-[var(--p-text-muted-color)] mt-0.5 mb-0">Avisarte antes de que se renueve</p>
+        </div>
+        <p-toggleswitch formControlName="notificationsEnabled" />
+      </div>
+
+      @if (form.controls.notificationsEnabled.value) {
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-1">
+          <label class="text-sm text-[var(--p-text-muted-color)] font-medium whitespace-nowrap">
+            Días de anticipación
+          </label>
+          <p-inputnumber
+            formControlName="daysBeforeRenewal"
+            [min]="1"
+            [max]="90"
+            [showButtons]="true"
+            [fluid]="true"
+          />
+        </div>
+      }
+    </div>
+
+    <!-- Acciones -->
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        [outlined]="true"
+        routerLink="/"
+        styleClass="flex-1"
+        type="button"
+      />
+      <p-button
+        [label]="isEdit() ? 'Guardar cambios' : 'Agregar suscripción'"
+        type="submit"
+        styleClass="flex-1"
+      />
+    </div>
+
+  </form>
+</main>

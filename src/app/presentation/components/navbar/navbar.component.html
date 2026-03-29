@@ -1,0 +1,68 @@
+<!-- ── Top Header: solo título + toggle de tema ─────────────────────────── -->
+<header class="sticky top-0 z-50 px-4 sm:px-6 py-3 flex items-center justify-between
+               border-b border-slate-200/60 dark:border-slate-800/60
+               bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl">
+
+  <span class="flex items-center gap-2.5 font-bold text-base sm:text-lg text-[var(--p-text-color)]">
+    <span class="text-xl">💳</span>
+    <span class="hidden sm:inline">Control de Suscripciones</span>
+    <span class="sm:hidden font-semibold text-sm">Control de Suscripciones</span>
+  </span>
+
+  <p-button
+    [icon]="themeService.isDark() ? 'pi pi-sun' : 'pi pi-moon'"
+    [rounded]="true"
+    severity="secondary"
+    [text]="true"
+    [pTooltip]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
+    tooltipPosition="bottom"
+    (click)="themeService.toggle()"
+    aria-label="Cambiar tema"
+  />
+</header>
+
+<!-- ── Bottom Navbar: menú de navegación ────────────────────────────────── -->
+<nav class="fixed bottom-0 left-0 right-0 z-50
+            border-t border-slate-200/60 dark:border-slate-800/60
+            bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl
+            safe-area-bottom">
+
+  <div class="flex items-center justify-around max-w-lg mx-auto">
+
+    <!-- Dashboard -->
+    <a routerLink="/"
+       routerLinkActive="text-[var(--p-primary-color)]"
+       [routerLinkActiveOptions]="{ exact: true }"
+       class="flex flex-col items-center gap-0.5 px-4 py-3 flex-1
+              text-[var(--p-text-muted-color)] hover:text-[var(--p-text-color)]
+              transition-colors duration-200 no-underline group">
+      <i class="pi pi-home text-xl group-[.active]:scale-110 transition-transform duration-200"></i>
+      <span class="text-sm font-medium">Dashboard</span>
+    </a>
+
+    <!-- Suscripciones -->
+    <a routerLink="/subscriptions"
+       routerLinkActive="text-[var(--p-primary-color)]"
+       class="flex flex-col items-center gap-0.5 px-4 py-3 flex-1
+              text-[var(--p-text-muted-color)] hover:text-[var(--p-text-color)]
+              transition-colors duration-200 no-underline">
+      <i class="pi pi-credit-card text-xl"></i>
+      <span class="text-sm font-medium">Suscripciones</span>
+    </a>
+
+    <!-- Nueva suscripción -->
+    <a routerLink="/subscriptions/new"
+       routerLinkActive="text-[var(--p-primary-color)]"
+       class="flex flex-col items-center gap-0.5 px-4 py-3 flex-1
+              text-[var(--p-text-muted-color)] hover:text-[var(--p-text-color)]
+              transition-colors duration-200 no-underline">
+      <span class="flex items-center justify-center w-9 h-9 rounded-full
+                   bg-[var(--p-primary-color)] text-white shadow-md
+                   hover:shadow-lg hover:scale-105 transition-all duration-200">
+        <i class="pi pi-plus text-sm"></i>
+      </span>
+      <span class="text-sm font-medium">Nueva</span>
+    </a>
+
+  </div>
+</nav>

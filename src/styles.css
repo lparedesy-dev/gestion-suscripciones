@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
+
+/* Tailwind dark: variant responde a la clase .p-dark que maneja PrimeNG */
+@variant dark (&:where(.p-dark, .p-dark *));
+
+/* Safe area para dispositivos con notch (iPhone, etc.) */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* SVG ribbon: light / dark */
+.bg-ribbon {
+  fill: rgba(148, 163, 184, 0.45);
+}
+.p-dark .bg-ribbon {
+  fill: rgba(30, 64, 175, 0.42);
+}
+
+/* ── Glass card: efecto tarjeta gruesa + lift en hover ───────────────────── */
+.card-glass {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),   /* highlight superior interno */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04),         /* sombra inferior interna */
+    0 4px 0   rgba(148, 163, 184, 0.40),         /* borde inferior — grosor */
+    0 7px 0   rgba(148, 163, 184, 0.20),         /* segundo escalón de grosor */
+    0 12px 30px rgba(0, 0, 0, 0.10);             /* sombra ambiente */
+  transition:
+    transform     320ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    box-shadow    320ms ease,
+    background    220ms ease;
+  will-change: transform;
+}
+
+.card-glass:hover {
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 4px 0   rgba(148, 163, 184, 0.28),
+    0 7px 0   rgba(148, 163, 184, 0.13),
+    0 22px 52px rgba(0, 0, 0, 0.16);
+}
+
+/* Dark mode */
+.p-dark .card-glass {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
+    0 4px 0   rgba(0, 0, 0, 0.55),
+    0 7px 0   rgba(0, 0, 0, 0.32),
+    0 12px 30px rgba(0, 0, 0, 0.55);
+}
+
+.p-dark .card-glass:hover {
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+    0 4px 0   rgba(0, 0, 0, 0.48),
+    0 7px 0   rgba(0, 0, 0, 0.26),
+    0 24px 56px rgba(0, 0, 0, 0.68);
+}
