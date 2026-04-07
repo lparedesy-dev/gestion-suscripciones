@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "control-subscripcion": {
+    "control-suscripciones": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -56,10 +56,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "control-subscripcion:build:production"
+              "buildTarget": "control-suscripciones:build:production"
             },
             "development": {
-              "buildTarget": "control-subscripcion:build:development"
+              "buildTarget": "control-suscripciones:build:development"
             }
           },
           "defaultConfiguration": "development"

@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
-import { ThemeService } from '../../../core/application/services/theme.service';
+import { ThemePort } from '../../../core/application/ports/theme.port';
 
 @Component({
   selector: 'app-navbar',
@@ -10,5 +10,5 @@ import { ThemeService } from '../../../core/application/services/theme.service';
   templateUrl: './navbar.component.html',
 })
 export class NavbarComponent {
-  readonly themeService = inject(ThemeService);
+  readonly themePort = inject(ThemePort);
 }

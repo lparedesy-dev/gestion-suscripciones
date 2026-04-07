@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { SubscriptionRepository } from '../repositories/subscription.repository';
+import { SubscriptionRepository } from '../../domain/repositories/subscription.repository';
 
 @Injectable({ providedIn: 'root' })
 export class DeleteSubscriptionUseCase {

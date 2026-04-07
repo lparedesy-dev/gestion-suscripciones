@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { SubscriptionRepository } from '../repositories/subscription.repository';
-import { CreateSubscriptionDto, Subscription } from '../entities/subscription.entity';
+import { SubscriptionRepository } from '../../domain/repositories/subscription.repository';
+import { CreateSubscriptionDto, Subscription } from '../../domain/entities/subscription.entity';
 
 @Injectable({ providedIn: 'root' })
 export class CreateSubscriptionUseCase {

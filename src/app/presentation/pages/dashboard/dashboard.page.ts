@@ -4,8 +4,9 @@ import { DecimalPipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { ChartModule } from 'primeng/chart';
-import { SubscriptionService } from '../../../core/application/services/subscription.service';
-import { NotificationService } from '../../../core/application/services/notification.service';
+import { SubscriptionStore } from '../../stores/subscription.store';
+import { NotificationPort } from '../../../core/application/ports/notification.port';
+import { ThemePort } from '../../../core/application/ports/theme.port';
 import { SubscriptionCardComponent } from '../../components/subscription-card/subscription-card.component';
 import { RenewalAlertBannerComponent } from '../../components/renewal-alert-banner/renewal-alert-banner.component';
 import { GlassCardComponent } from '../../components/glass-card/glass-card.component';
@@ -25,8 +26,9 @@ import { GlassCardComponent } from '../../components/glass-card/glass-card.compo
   templateUrl: './dashboard.page.html',
 })
 export class DashboardPage implements OnInit {
-  readonly subService = inject(SubscriptionService);
-  readonly notifService = inject(NotificationService);
+  readonly store = inject(SubscriptionStore);
+  readonly notifPort = inject(NotificationPort);
+  private readonly themePort = inject(ThemePort);
 
   private readonly palette = [
     '#6366f1', '#ec4899', '#f59e0b', '#10b981',
@@ -35,7 +37,7 @@ export class DashboardPage implements OnInit {
   ];
 
   readonly spendingDonutData = computed(() => {
-    const subs = this.subService.subscriptions().filter(s => s.status === 'active');
+    const subs = this.store.subscriptions().filter(s => s.status === 'active');
     return {
       labels: subs.map(s => s.name),
       datasets: [{
@@ -48,7 +50,7 @@ export class DashboardPage implements OnInit {
   });
 
   readonly spendingBarData = computed(() => {
-    const subs = this.subService.subscriptions()
+    const subs = this.store.subscriptions()
       .filter(s => s.status === 'active')
       .map(s => ({
         name: s.name,
@@ -69,54 +71,61 @@ export class DashboardPage implements OnInit {
     };
   });
 
-  readonly donutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '68%',
-    plugins: {
-      legend: {
-        position: 'right' as const,
-        labels: {
-          color: '#94a3b8',
-          font: { size: 12 },
-          padding: 14,
-          usePointStyle: true,
-          pointStyle: 'circle' as const,
+  readonly donutOptions = computed(() => {
+    const textColor = this.themePort.isDark() ? '#94a3b8' : '#64748b';
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: {
+          position: 'right' as const,
+          labels: {
+            color: textColor,
+            font: { size: 12 },
+            padding: 14,
+            usePointStyle: true,
+            pointStyle: 'circle' as const,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx: any) => `  $${ctx.raw} / mes`,
+          },
         },
       },
-      tooltip: {
-        callbacks: {
-          label: (ctx: any) => `  $${ctx.raw} / mes`,
-        },
-      },
-    },
-  };
+    };
+  });
 
-  readonly barOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (ctx: any) => `  $${ctx.raw} / mes`,
+  readonly barOptions = computed(() => {
+    const textColor = this.themePort.isDark() ? '#94a3b8' : '#64748b';
+    const gridColor = this.themePort.isDark() ? 'rgba(148,163,184,0.08)' : 'rgba(100,116,139,0.12)';
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx: any) => `  $${ctx.raw} / mes`,
+          },
         },
       },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { color: '#94a3b8', font: { size: 11 } },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: textColor, font: { size: 11 } },
+        },
+        y: {
+          grid: { color: gridColor },
+          ticks: { color: textColor, font: { size: 11 } },
+          beginAtZero: true,
+        },
       },
-      y: {
-        grid: { color: 'rgba(148,163,184,0.08)' },
-        ticks: { color: '#94a3b8', font: { size: 11 } },
-        beginAtZero: true,
-      },
-    },
-  };
+    };
+  });
 
   ngOnInit(): void {
-    this.subService.load();
+    this.store.load();
   }
 }

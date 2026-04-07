@@ -1,8 +1,9 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
+import { ConfirmationService } from 'primeng/api';
 import { Subscription } from '../../../core/domain/entities/subscription.entity';
 
 type TagSeverity = 'success' | 'warn' | 'danger' | 'info' | 'secondary' | 'contrast' | undefined;
@@ -15,6 +16,7 @@ type TagSeverity = 'success' | 'warn' | 'danger' | 'info' | 'secondary' | 'contr
 export class SubscriptionCardComponent {
   readonly subscription = input.required<Subscription>();
   readonly deleted = output<string>();
+  private readonly confirmationService = inject(ConfirmationService);
 
   get statusLabel(): string {
     const map: Record<string, string> = { active: 'Activa', paused: 'Pausada', cancelled: 'Cancelada' };
@@ -45,8 +47,14 @@ export class SubscriptionCardComponent {
   }
 
   confirmDelete(): void {
-    if (confirm(`¿Eliminar ${this.subscription().name}?`)) {
-      this.deleted.emit(this.subscription().id);
-    }
+    this.confirmationService.confirm({
+      message: `¿Eliminar ${this.subscription().name}?`,
+      header: 'Confirmar eliminación',
+      icon: 'pi pi-trash',
+      acceptLabel: 'Eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.deleted.emit(this.subscription().id),
+    });
   }
 }

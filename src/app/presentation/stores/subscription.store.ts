@@ -1,13 +1,13 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { CreateSubscriptionUseCase } from '../../domain/use-cases/create-subscription.use-case';
-import { DeleteSubscriptionUseCase } from '../../domain/use-cases/delete-subscription.use-case';
-import { GetSubscriptionsUseCase } from '../../domain/use-cases/get-subscriptions.use-case';
-import { UpdateSubscriptionUseCase } from '../../domain/use-cases/update-subscription.use-case';
-import { CheckRenewalsUseCase } from '../../domain/use-cases/check-renewals.use-case';
-import { CreateSubscriptionDto, RenewalAlert, Subscription, UpdateSubscriptionDto } from '../../domain/entities/subscription.entity';
+import { CreateSubscriptionUseCase } from '../../core/application/use-cases/create-subscription.use-case';
+import { DeleteSubscriptionUseCase } from '../../core/application/use-cases/delete-subscription.use-case';
+import { GetSubscriptionsUseCase } from '../../core/application/use-cases/get-subscriptions.use-case';
+import { UpdateSubscriptionUseCase } from '../../core/application/use-cases/update-subscription.use-case';
+import { CheckRenewalsUseCase } from '../../core/application/use-cases/check-renewals.use-case';
+import { CreateSubscriptionDto, RenewalAlert, Subscription, UpdateSubscriptionDto } from '../../core/domain/entities/subscription.entity';
 
 @Injectable({ providedIn: 'root' })
-export class SubscriptionService {
+export class SubscriptionStore {
   private readonly getAll = inject(GetSubscriptionsUseCase);
   private readonly createUC = inject(CreateSubscriptionUseCase);
   private readonly updateUC = inject(UpdateSubscriptionUseCase);

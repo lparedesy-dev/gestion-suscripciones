@@ -1,6 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Location } from '@angular/common';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -9,8 +11,9 @@ import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
-import { SubscriptionService } from '../../../core/application/services/subscription.service';
-import { NotificationService } from '../../../core/application/services/notification.service';
+import { SubscriptionStore } from '../../stores/subscription.store';
+import { NotificationPort } from '../../../core/application/ports/notification.port';
+import { GlassCardComponent } from '../../components/glass-card/glass-card.component';
 
 const CARD_TYPES = [
   'Visa', 'Mastercard', 'American Express', 'Débito',
@@ -53,6 +56,7 @@ const POPULAR_SERVICES: { name: string; color: string }[] = [
     ToggleSwitchModule,
     InputGroupModule,
     InputGroupAddonModule,
+    GlassCardComponent,
   ],
   templateUrl: './subscription-form.page.html',
 })
@@ -60,8 +64,10 @@ export class SubscriptionFormPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly subService = inject(SubscriptionService);
-  readonly notifService = inject(NotificationService);
+  private readonly location = inject(Location);
+  private readonly messageService = inject(MessageService);
+  private readonly store = inject(SubscriptionStore);
+  readonly notifPort = inject(NotificationPort);
 
   readonly editId = signal<string | null>(null);
   readonly isEdit = signal(false);
@@ -97,7 +103,7 @@ export class SubscriptionFormPage implements OnInit {
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     password: [''],
-    cost: [0, [Validators.required, Validators.min(0)]],
+    cost: [0, [Validators.required, Validators.min(0.01)]],
     currency: ['USD', Validators.required],
     billingCycle: ['monthly' as 'monthly' | 'annual', Validators.required],
     renewalDay: [1, [Validators.required, Validators.min(1), Validators.max(31)]],
@@ -111,13 +117,17 @@ export class SubscriptionFormPage implements OnInit {
     daysBeforeRenewal: [7, [Validators.required, Validators.min(1), Validators.max(90)]],
   });
 
+  goBack(): void {
+    this.location.back();
+  }
+
   ngOnInit(): void {
-    this.subService.load();
+    this.store.load();
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.editId.set(id);
       this.isEdit.set(true);
-      const sub = this.subService.getById(id);
+      const sub = this.store.getById(id);
       if (sub) {
         this.isMonthly.set(sub.billingCycle === 'monthly');
         const pmParts = (sub.paymentMethod ?? '').split(' ••');
@@ -188,13 +198,20 @@ export class SubscriptionFormPage implements OnInit {
     };
 
     if (this.isEdit()) {
-      this.subService.update(this.editId()!, dto);
+      this.store.update(this.editId()!, dto);
     } else {
-      this.subService.create(dto);
+      this.store.create(dto);
       if (v.notificationsEnabled) {
-        await this.notifService.requestPermission();
+        await this.notifPort.requestPermission();
       }
     }
+
+    this.messageService.add({
+      severity: 'success',
+      summary: this.isEdit() ? 'Suscripción actualizada' : 'Suscripción creada',
+      detail: `${v.name} fue guardada correctamente`,
+      life: 3000,
+    });
 
     this.router.navigate(['/']);
   }

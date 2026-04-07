@@ -1,14 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SubscriptionService } from './core/application/services/subscription.service';
-import { NotificationService } from './core/application/services/notification.service';
-import { ThemeService } from './core/application/services/theme.service';
+import { SubscriptionStore } from './presentation/stores/subscription.store';
+import { NotificationPort } from './core/application/ports/notification.port';
+import { ThemePort } from './core/application/ports/theme.port';
 import { NavbarComponent } from './presentation/components/navbar/navbar.component';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PrimeNG } from 'primeng/config';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, NavbarComponent, ToastModule, ConfirmDialogModule],
   template: `
     <div class="relative min-h-screen pb-20 overflow-hidden
       bg-gradient-to-br from-slate-200 via-slate-100 to-blue-100
@@ -55,6 +57,8 @@ import { PrimeNG } from 'primeng/config';
       <!-- ── End decorative layer ─────────────────────────────────────── -->
 
       <div class="relative z-10">
+        <p-toast />
+        <p-confirmDialog />
         <app-navbar />
         <router-outlet />
       </div>
@@ -62,15 +66,15 @@ import { PrimeNG } from 'primeng/config';
   `,
 })
 export class App implements OnInit {
-  private readonly subService = inject(SubscriptionService);
-  private readonly notifService = inject(NotificationService);
-  private readonly themeService = inject(ThemeService);
+  private readonly store = inject(SubscriptionStore);
+  private readonly notifPort = inject(NotificationPort);
+  private readonly themePort = inject(ThemePort);
   private readonly primeng = inject(PrimeNG);
 
   ngOnInit(): void {
-    this.themeService.init();
-    this.subService.load();
-    this.notifService.checkAndNotify();
+    this.themePort.init();
+    this.store.load();
+    this.notifPort.notify(this.store.renewalAlerts());
     this.primeng.ripple.set(true);
   }
 }

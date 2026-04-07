@@ -10,13 +10,13 @@
   </span>
 
   <p-button
-    [icon]="themeService.isDark() ? 'pi pi-sun' : 'pi pi-moon'"
+    [icon]="themePort.isDark() ? 'pi pi-sun' : 'pi pi-moon'"
     [rounded]="true"
     severity="secondary"
     [text]="true"
-    [pTooltip]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
+    [pTooltip]="themePort.isDark() ? 'Modo claro' : 'Modo oscuro'"
     tooltipPosition="bottom"
-    (click)="themeService.toggle()"
+    (click)="themePort.toggle()"
     aria-label="Cambiar tema"
   />
 </header>

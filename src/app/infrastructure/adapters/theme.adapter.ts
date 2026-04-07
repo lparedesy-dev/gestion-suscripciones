@@ -1,9 +1,10 @@
 import { Injectable, signal } from '@angular/core';
+import { ThemePort } from '../../core/application/ports/theme.port';
 
 const THEME_KEY = 'ctrl_theme';
 
 @Injectable({ providedIn: 'root' })
-export class ThemeService {
+export class ThemeAdapter extends ThemePort {
   readonly isDark = signal<boolean>(false);
 
   init(): void {

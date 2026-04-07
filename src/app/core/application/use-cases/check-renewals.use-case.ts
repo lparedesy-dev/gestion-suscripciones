@@ -1,23 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { SubscriptionRepository } from '../repositories/subscription.repository';
-import { RenewalAlert, Subscription } from '../entities/subscription.entity';
-
-function getNextRenewalDate(sub: Subscription, today: Date): Date {
-  if (sub.billingCycle === 'monthly') {
-    let date = new Date(today.getFullYear(), today.getMonth(), sub.renewalDay);
-    if (date.getTime() < today.getTime()) {
-      date = new Date(today.getFullYear(), today.getMonth() + 1, sub.renewalDay);
-    }
-    return date;
-  } else {
-    const month = (sub.renewalMonth ?? 1) - 1; // 0-indexed
-    let date = new Date(today.getFullYear(), month, sub.renewalDay);
-    if (date.getTime() < today.getTime()) {
-      date = new Date(today.getFullYear() + 1, month, sub.renewalDay);
-    }
-    return date;
-  }
-}
+import { SubscriptionRepository } from '../../domain/repositories/subscription.repository';
+import { RenewalAlert } from '../../domain/entities/subscription.entity';
+import { getNextRenewalDate } from '../../domain/functions/renewal-date.fn';
 
 @Injectable({ providedIn: 'root' })
 export class CheckRenewalsUseCase {

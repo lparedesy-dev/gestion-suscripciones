@@ -1,11 +1,12 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { SubscriptionService } from './subscription.service';
+import { Injectable, signal } from '@angular/core';
+import { NotificationPort } from '../../core/application/ports/notification.port';
+import { RenewalAlert } from '../../core/domain/entities/subscription.entity';
 
 @Injectable({ providedIn: 'root' })
-export class NotificationService {
-  private readonly subscriptionService = inject(SubscriptionService);
-
-  readonly permissionGranted = signal<boolean>(Notification.permission === 'granted');
+export class BrowserNotificationAdapter extends NotificationPort {
+  readonly permissionGranted = signal<boolean>(
+    typeof Notification !== 'undefined' && Notification.permission === 'granted'
+  );
 
   async requestPermission(): Promise<boolean> {
     if (!('Notification' in window)) return false;
@@ -19,8 +20,7 @@ export class NotificationService {
     return granted;
   }
 
-  checkAndNotify(): void {
-    const alerts = this.subscriptionService.renewalAlerts();
+  notify(alerts: RenewalAlert[]): void {
     if (!alerts.length) return;
 
     for (const alert of alerts) {

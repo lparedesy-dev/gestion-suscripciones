@@ -87,6 +87,9 @@
           [maxFractionDigits]="2"
           [fluid]="true"
         />
+        @if (form.controls.cost.touched && form.controls.cost.errors?.['min']) {
+          <p class="text-sm text-red-500 mt-1">El costo debe ser mayor a 0</p>
+        }
       </div>
       <div class="flex flex-col gap-1">
         <label class="block text-sm mb-1 text-[var(--p-text-muted-color)] font-medium">Ciclo de pago *</label>
@@ -183,35 +186,32 @@
     </div>
 
     <!-- Notificaciones -->
-    <div class="rounded-2xl overflow-hidden
-      bg-white/60 dark:bg-slate-900/40
-      backdrop-blur-2xl
-      border border-white/75 dark:border-white/[0.07]
-      shadow-xl shadow-slate-400/20 dark:shadow-black/40
-      p-5 space-y-4">
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <p class="font-semibold m-0">Notificaciones</p>
-          <p class="text-sm text-[var(--p-text-muted-color)] mt-0.5 mb-0">Avisarte antes de que se renueve</p>
+    <app-glass-card>
+      <div class="p-5 space-y-4">
+        <div class="flex items-center justify-between gap-4">
+          <div>
+            <p class="font-semibold m-0">Notificaciones</p>
+            <p class="text-sm text-[var(--p-text-muted-color)] mt-0.5 mb-0">Avisarte antes de que se renueve</p>
+          </div>
+          <p-toggleswitch formControlName="notificationsEnabled" />
         </div>
-        <p-toggleswitch formControlName="notificationsEnabled" />
-      </div>
 
-      @if (form.controls.notificationsEnabled.value) {
-        <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-1">
-          <label class="text-sm text-[var(--p-text-muted-color)] font-medium whitespace-nowrap">
-            Días de anticipación
-          </label>
-          <p-inputnumber
-            formControlName="daysBeforeRenewal"
-            [min]="1"
-            [max]="90"
-            [showButtons]="true"
-            [fluid]="true"
-          />
-        </div>
-      }
-    </div>
+        @if (form.controls.notificationsEnabled.value) {
+          <div class="flex flex-col sm:flex-row sm:items-center gap-3 pt-1">
+            <label class="text-sm text-[var(--p-text-muted-color)] font-medium whitespace-nowrap">
+              Días de anticipación
+            </label>
+            <p-inputnumber
+              formControlName="daysBeforeRenewal"
+              [min]="1"
+              [max]="90"
+              [showButtons]="true"
+              [fluid]="true"
+            />
+          </div>
+        }
+      </div>
+    </app-glass-card>
 
     <!-- Acciones -->
     <div class="flex flex-col sm:flex-row gap-3 pt-2">
@@ -219,7 +219,7 @@
         label="Cancelar"
         severity="secondary"
         [outlined]="true"
-        routerLink="/"
+        (click)="goBack()"
         styleClass="flex-1"
         type="button"
       />

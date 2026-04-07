@@ -28,23 +28,18 @@
 
   <!-- Lista -->
   @if (filtered.length === 0) {
-    <div class="rounded-2xl overflow-hidden
-      bg-white/60 dark:bg-slate-900/40
-      backdrop-blur-2xl
-      border border-white/75 dark:border-white/[0.07]
-      shadow-xl shadow-slate-400/20 dark:shadow-black/40
-      text-center py-16 px-6">
+    <app-glass-card class="block text-center py-16 px-6">
       <div class="w-16 h-16 rounded-2xl bg-[var(--p-primary-color)]/10 dark:bg-[var(--p-primary-color)]/20
                   flex items-center justify-center mx-auto mb-4">
         <i class="pi pi-search text-3xl text-[var(--p-primary-color)]"></i>
       </div>
       <p class="text-base font-semibold mb-1">Sin resultados</p>
       <p class="text-sm text-[var(--p-text-muted-color)]">No hay suscripciones con este filtro</p>
-    </div>
+    </app-glass-card>
   } @else {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (sub of filtered; track sub.id) {
-        <app-subscription-card [subscription]="sub" (deleted)="subService.delete($event)" />
+        <app-subscription-card [subscription]="sub" (deleted)="store.delete($event)" />
       }
     </div>
   }

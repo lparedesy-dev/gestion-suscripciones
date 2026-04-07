@@ -1,19 +1,20 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { SubscriptionService } from '../../../core/application/services/subscription.service';
+import { SubscriptionStore } from '../../stores/subscription.store';
 import { SubscriptionCardComponent } from '../../components/subscription-card/subscription-card.component';
+import { GlassCardComponent } from '../../components/glass-card/glass-card.component';
 import { SubscriptionStatus } from '../../../core/domain/entities/subscription.entity';
 
 type FilterStatus = SubscriptionStatus | 'all';
 
 @Component({
   selector: 'app-subscriptions-page',
-  imports: [RouterLink, ButtonModule, SubscriptionCardComponent],
+  imports: [RouterLink, ButtonModule, SubscriptionCardComponent, GlassCardComponent],
   templateUrl: './subscriptions.page.html',
 })
 export class SubscriptionsPage implements OnInit {
-  readonly subService = inject(SubscriptionService);
+  readonly store = inject(SubscriptionStore);
   readonly activeFilter = signal<FilterStatus>('all');
 
   readonly filters: { label: string; value: FilterStatus }[] = [
@@ -24,13 +25,13 @@ export class SubscriptionsPage implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.subService.load();
+    this.store.load();
   }
 
   get filtered() {
     const f = this.activeFilter();
-    if (f === 'all') return this.subService.subscriptions();
-    return this.subService.subscriptions().filter(s => s.status === f);
+    if (f === 'all') return this.store.subscriptions();
+    return this.store.subscriptions().filter(s => s.status === f);
   }
 
   setFilter(value: FilterStatus): void {
