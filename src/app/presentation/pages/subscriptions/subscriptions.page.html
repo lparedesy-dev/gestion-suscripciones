@@ -14,17 +14,13 @@
   </div>
 
   <!-- Filtros -->
-  <div class="flex gap-2 flex-wrap">
-    @for (filter of filters; track filter.value) {
-      <p-button
-        [label]="filter.label"
-        [outlined]="activeFilter() !== filter.value"
-        [severity]="activeFilter() === filter.value ? 'primary' : 'secondary'"
-        size="small"
-        (click)="setFilter(filter.value)"
-      />
-    }
-  </div>
+  <p-selectbutton
+    [options]="filters"
+    [ngModel]="activeFilter()"
+    (ngModelChange)="activeFilter.set($event)"
+    optionLabel="label"
+    optionValue="value"
+  />
 
   <!-- Lista -->
   @if (filtered.length === 0) {

@@ -1,19 +1,20 @@
-<div class="card-glass card-glass--alert p-4 space-y-3">
-  <p class="font-semibold m-0 flex items-center gap-2 text-amber-700 dark:text-amber-400">
-    <i class="pi pi-exclamation-triangle"></i>
-    Próximas renovaciones
-  </p>
-  @for (alert of alerts(); track alert.subscription.id) {
-    <div class="flex items-center justify-between text-sm gap-3">
-      <span class="truncate text-amber-900 dark:text-amber-200">
-        {{ alert.subscription.name }}
-        <span class="text-amber-600/70 dark:text-amber-400/60"> — {{ alert.subscription.email }}</span>
-      </span>
-      <p-tag
-        [value]="alert.daysUntilRenewal === 0 ? 'Hoy' : 'En ' + alert.daysUntilRenewal + ' día(s)'"
-        severity="warn"
-        class="shrink-0"
-      />
-    </div>
-  }
-</div>
+<p-message severity="warn" [closable]="false" styleClass="w-full">
+  <div class="flex flex-col gap-2 w-full">
+    <p class="font-semibold flex items-center gap-2 m-0">
+      <i class="pi pi-bell"></i> Próximas renovaciones
+    </p>
+    @for (alert of alerts(); track alert.subscription.id) {
+      <div class="flex items-center justify-between text-sm gap-3">
+        <span class="truncate">
+          {{ alert.subscription.name }}
+          <span class="opacity-60"> — {{ alert.subscription.email }}</span>
+        </span>
+        <p-tag
+          [value]="alert.daysUntilRenewal === 0 ? 'Hoy' : 'En ' + alert.daysUntilRenewal + ' día(s)'"
+          severity="warn"
+          class="shrink-0"
+        />
+      </div>
+    }
+  </div>
+</p-message>

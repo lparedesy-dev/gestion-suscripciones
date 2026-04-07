@@ -1,6 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { SubscriptionStore } from '../../stores/subscription.store';
 import { SubscriptionCardComponent } from '../../components/subscription-card/subscription-card.component';
 import { GlassCardComponent } from '../../components/glass-card/glass-card.component';
@@ -10,7 +12,7 @@ type FilterStatus = SubscriptionStatus | 'all';
 
 @Component({
   selector: 'app-subscriptions-page',
-  imports: [RouterLink, ButtonModule, SubscriptionCardComponent, GlassCardComponent],
+  imports: [RouterLink, FormsModule, ButtonModule, SelectButtonModule, SubscriptionCardComponent, GlassCardComponent],
   templateUrl: './subscriptions.page.html',
 })
 export class SubscriptionsPage implements OnInit {

@@ -73,14 +73,3 @@
     0 22px 52px var(--glass-shadow-ambient);
 }
 
-/* ── Glass card variants ─────────────────────────────────────────────────── */
-.card-glass--alert {
-  --glass-bg: rgba(255,251,235,0.70);
-  --glass-border: rgba(217,119,6,0.45);
-  --glass-shadow-ambient: rgba(217,119,6,0.08);
-}
-
-.p-dark .card-glass--alert {
-  --glass-bg: rgba(120,53,15,0.25);
-  --glass-border: rgba(217,119,6,0.35);
-}
